@@ -84,6 +84,19 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#f0f0f0;min-height:
 
 <div class="floaters" id="floaters"></div>
 
+<!-- POPUP -->
+<div id="popup-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px);">
+  <div style="background:#141414;border:1px solid #2a2a2a;border-radius:20px;padding:2rem 1.5rem;max-width:380px;width:100%;text-align:center;">
+    <div style="font-size:48px;margin-bottom:1rem;">🎯</div>
+    <div style="font-family:Bebas Neue,cursive;font-size:28px;color:#fff;margin-bottom:0.75rem;line-height:1.2;">Хочеш зробити свій квест ще цікавішим?</div>
+    <p style="font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.6;">Увімкни звук — і відчуй атмосферу останнього вільного дня на повну 🍺</p>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closePopup(true)" style="flex:1;background:linear-gradient(135deg,#ff5500,#ff2200);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">Так 🔥</button>
+      <button onclick="closePopup(false)" style="flex:1;background:#1a1a1a;color:#888;border:1px solid #333;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">Ні</button>
+    </div>
+  </div>
+</div>
+
 <div class="music-bar">
   <span class="music-note" id="musicNote">🎵</span>
   <div class="music-info">
@@ -286,6 +299,15 @@ function showResult(){
   showScreen(pct>=0.6?'s2':'s3');
 }
 
+function closePopup(playMusic){
+  document.getElementById("popup-overlay").style.display="none";
+  if(playMusic){
+    audio.play().then(()=>{
+      started=true;
+      document.getElementById("playBtn").textContent="⏸";
+    }).catch(()=>{});
+  }
+}
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
