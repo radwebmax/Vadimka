@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Операція: Останній Вільний День</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#0a0a0a;
+  color:#f0f0f0;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* FLOATING EMOJIS BG */
+.floaters{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+.floater{position:absolute;font-size:28px;animation:floatUp linear infinite;opacity:0;}
+@keyframes floatUp{
+  0%{transform:translateY(110vh) rotate(0deg);opacity:0;}
+  10%{opacity:0.4;}
+  90%{opacity:0.4;}
+  100%{transform:translateY(-10vh) rotate(360deg);opacity:0;}
+}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;align-items:center;min-height:100vh;padding:2rem 1.2rem;position:relative;z-index:1;}
+.screen.active{display:flex;}
+
+/* INTRO */
+.hero-title{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(52px,12vw,90px);
+  line-height:0.95;
+  text-align:center;
+  color:#fff;
+  text-shadow:0 0 40px rgba(255,80,0,0.5);
+  margin:1.5rem 0 0.5rem;
+  animation:titlePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+@keyframes titlePop{from{transform:scale(0.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+.chain-emoji{font-size:clamp(60px,15vw,110px);animation:shake 2s ease-in-out infinite;display:block;text-align:center;margin-top:1rem;}
+@keyframes shake{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+
+.countdown-bar{
+  display:flex;gap:16px;margin:1.5rem 0;
+  animation:fadeIn 1s 0.5s both;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.cd-box{
+  background:#1a1a1a;
+  border:1px solid #333;
+  border-radius:12px;
+  padding:14px 20px;
+  text-align:center;
+  min-width:70px;
+}
+.cd-num{font-family:'Bebas Neue',cursive;font-size:36px;color:#ff5500;line-height:1;}
+.cd-label{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:0.1em;}
+
+.warning-tape{
+  background:repeating-linear-gradient(45deg,#ff5500,#ff5500 10px,#1a1a1a 10px,#1a1a1a 20px);
+  width:120%;
+  padding:10px 0;
+  text-align:center;
+  font-family:'Bebas Neue',cursive;
+  font-size:20px;
+  letter-spacing:0.2em;
+  color:#fff;
+  margin:1.5rem -10%;
+  transform:rotate(-1.5deg);
+}
+
+.icons-row{display:flex;gap:20px;font-size:40px;margin:1rem 0;animation:fadeIn 1s 0.8s both;}
+
+.sub{font-size:15px;color:#888;text-align:center;line-height:1.7;margin-bottom:1.5rem;max-width:420px;}
+
+.btn-main{
+  background:linear-gradient(135deg,#ff5500,#ff2200);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:16px 40px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  transition:transform 0.15s,box-shadow 0.15s;
+  box-shadow:0 4px 20px rgba(255,85,0,0.4);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 4px 20px rgba(255,85,0,0.4);}50%{box-shadow:0 4px 35px rgba(255,85,0,0.7);}}
+.btn-main:hover{transform:scale(1.05);}
+.btn-retry{background:linear-gradient(135deg,#c0392b,#922b21);}
+
+/* QUIZ SCREEN */
+.progress-wrap{width:100%;max-width:540px;margin-bottom:1.5rem;}
+.progress-bar-bg{height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,#ff5500,#ff9500);border-radius:3px;transition:width 0.4s;}
+.progress-label{font-size:12px;color:#666;margin-bottom:6px;text-align:right;}
+
+.qcard{
+  background:#141414;
+  border:1px solid #2a2a2a;
+  border-radius:16px;
+  padding:1.75rem;
+  width:100%;
+  max-width:540px;
+  margin-bottom:1rem;
+}
+.qcard .qtopic{font-size:11px;color:#ff5500;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.6rem;}
+.qcard .qtext{font-size:17px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:1.2rem;}
+
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{
+  background:#0d0d0d;
+  border:1.5px solid #252525;
+  border-radius:10px;
+  padding:13px 18px;
+  font-size:14px;
+  font-weight:600;
+  color:#bbb;
+  cursor:pointer;
+  text-align:left;
+  transition:all 0.15s;
+  display:flex;align-items:center;gap:10px;
+}
+.opt:hover{border-color:#444;color:#fff;background:#1a1a1a;}
+.opt .opt-letter{
+  width:26px;height:26px;border-radius:50%;background:#1a1a1a;border:1px solid #333;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  flex-shrink:0;
+}
+.opt.correct{border-color:#1D9E75;background:#0a1f18;color:#5DCAA5;}
+.opt.correct .opt-letter{background:#1D9E75;border-color:#1D9E75;color:#fff;}
+.opt.wrong{border-color:#e74c3c;background:#1f0a0a;color:#f09595;}
+.opt.wrong .opt-letter{background:#e74c3c;border-color:#e74c3c;color:#fff;}
+
+.status-msg{font-size:14px;color:#888;min-height:24px;text-align:center;margin-top:8px;font-weight:600;}
+
+/* RESULT SCREEN */
+.result-hero{
+  font-family:'Bebas Neue',cursive;
+  font-size:clamp(60px,15vw,100px);
+  text-align:center;
+  line-height:0.95;
+  margin:1rem 0;
+}
+.result-hero.win{color:#1D9E75;text-shadow:0 0 40px rgba(29,158,117,0.5);}
+.result-hero.lose{color:#e74c3c;text-shadow:0 0 40px rgba(231,76,60,0.5);}
+
+.score-chips{display:flex;gap:10px;margin:0.5rem 0 1.5rem;flex-wrap:wrap;justify-content:center;}
+.chip{
+  background:#1a1a1a;border:1px solid #2a2a2a;border-radius:20px;
+  padding:6px 14px;font-size:13px;color:#888;
+}
+.chip.green{border-color:#1D9E75;color:#5DCAA5;background:#0a1f18;}
+.chip.red{border-color:#e74c3c;color:#f09595;background:#1f0a0a;}
+
+.address-reveal{
+  background:#0a1f18;
+  border:2px solid #1D9E75;
+  border-radius:16px;
+  padding:2rem;
+  text-align:center;
+  margin:1rem 0;
+  width:100%;
+  max-width:520px;
+  position:relative;
+  overflow:hidden;
+  animation:revealIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+@keyframes revealIn{from{transform:scale(0.8) rotate(-3deg);opacity:0;}to{transform:scale(1) rotate(0deg);opacity:1;}}
+.address-reveal::before{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(29,158,117,0.15),transparent);
+  animation:shimmer 2s 0.8s ease-in-out infinite;
+}
+@keyframes shimmer{0%{left:-100%;}100%{left:150%;}}
+.addr-label{font-size:11px;color:#5DCAA5;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.5rem;}
+.addr-text{font-family:'Bebas Neue',cursive;font-size:28px;color:#9FE1CB;margin-bottom:0.3rem;line-height:1.2;}
+.addr-date{font-size:14px;color:#5DCAA5;}
+
+.confetti-row{font-size:32px;margin:0.5rem 0;animation:bounce 1s ease-in-out infinite alternate;}
+@keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-10px);}}
+
+.scene-divider{
+  display:flex;align-items:center;gap:12px;width:100%;max-width:520px;margin:1.5rem 0;
+}
+.scene-divider::before,.scene-divider::after{content:'';flex:1;height:1px;background:#222;}
+.scene-divider span{font-size:20px;}
+
+</style>
+</head>
+<body>
+
+<!-- FLOATING BG EMOJIS -->
+<div class="floaters" id="floaters"></div>
+
+<!-- ═══ SCREEN 0: INTRO ═══ -->
+<div id="s0" class="screen active">
+  <span class="chain-emoji">⛓️</span>
+  <div class="hero-title">ОСТАННІЙ<br>ВІЛЬНИЙ<br>ДЕНЬ</div>
+
+  <div class="warning-tape">⚠️ УВАГА · ЗОНА НЕБЕЗПЕКИ · ВАДИМ ОДРУЖУЄТЬСЯ ⚠️</div>
+
+  <div class="icons-row">🍺🥩🏊🔥🎉💀</div>
+
+  <p class="sub">
+    Вадиме. Ти отримав це не просто так.<br>
+    27 травня — твій останній шанс бути вільним.<br>
+    Але спочатку — пройди перевірку.<br>
+    <strong style="color:#ff5500;">Провалиш — залишишся вдома з Марією.</strong>
+  </p>
+
+  <div class="countdown-bar" id="countdown">
+    <div class="cd-box"><div class="cd-num" id="cd-d">--</div><div class="cd-label">днів</div></div>
+    <div class="cd-box"><div class="cd-num" id="cd-h">--</div><div class="cd-label">годин</div></div>
+    <div class="cd-box"><div class="cd-num" id="cd-m">--</div><div class="cd-label">хвилин</div></div>
+    <div class="cd-box"><div class="cd-num" id="cd-s">--</div><div class="cd-label">секунд</div></div>
+  </div>
+
+  <div class="scene-divider"><span>🔒</span></div>
+
+  <button class="btn-main" onclick="startQuiz()">Розпочати допит 🔍</button>
+  <p style="font-size:12px;color:#444;margin-top:1rem;">Кількість питань: 5 · Одна спроба · Без підказок</p>
+</div>
+
+<!-- ═══ SCREEN 1: QUIZ ═══ -->
+<div id="s1" class="screen">
+  <div style="font-family:'Bebas Neue',cursive;font-size:28px;color:#ff5500;margin-bottom:1rem;letter-spacing:0.05em;">
+    🔍 ПЕРЕВІРКА ОСОБИСТОСТІ
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label" id="plabel">Питання 1 з 5</div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="pfill" style="width:0%"></div></div>
+  </div>
+
+  <div class="qcard">
+    <div class="qtopic" id="qtopic"></div>
+    <div class="qtext" id="qtxt"></div>
+    <div class="opts" id="opts"></div>
+  </div>
+  <div class="status-msg" id="statusmsg"></div>
+</div>
+
+<!-- ═══ SCREEN 2: WIN ═══ -->
+<div id="s2" class="screen">
+  <div class="confetti-row" id="confetti-row">🎉🍺🥩🎊🔥</div>
+  <div class="result-hero win" id="scoreshow"></div>
+  <p class="sub" id="score-comment" style="font-size:16px;color:#ccc;"></p>
+
+  <div class="score-chips" id="win-chips"></div>
+
+  <div class="address-reveal">
+    <div class="addr-label">📍 Секретні координати</div>
+    <!-- ✏️ ЗАМІНІТЬ АДРЕСУ -->
+    <div class="addr-text">вул. Прикладна 42<br>с. Красне</div>
+    <div class="addr-date">🗓️ 27 травня · Збір о 15:00 · Ночівля</div>
+  </div>
+
+  <div class="scene-divider"><span>🥩</span></div>
+
+  <div style="display:flex;gap:16px;font-size:14px;color:#666;text-align:center;margin-bottom:1.5rem;">
+    <div>🍺<br>Пиво<br>охолоджено</div>
+    <div>🥩<br>М'ясо<br>замариновано</div>
+    <div>🏊<br>Ріка<br>чекає</div>
+    <div>🔥<br>Багаття<br>буде</div>
+  </div>
+
+  <p style="font-size:13px;color:#555;">Не запізнись. І так останній раз вільний.</p>
+</div>
+
+<!-- ═══ SCREEN 3: FAIL ═══ -->
+<div id="s3" class="screen">
+  <div style="font-size:80px;animation:shake 0.5s ease-in-out infinite;">😬</div>
+  <div class="result-hero lose">ПРОВАЛ</div>
+  <p class="sub" style="color:#e74c3c;font-weight:700;">Адреса засекречена</p>
+  <p class="sub">Ти або не той Вадим,<br>або Марія вже перепрограмувала тебе.</p>
+
+  <div style="background:#1f0a0a;border:1px solid #c0392b;border-radius:14px;padding:1.5rem;text-align:center;margin:1rem 0;max-width:460px;width:100%;">
+    <div style="font-size:14px;color:#e74c3c;">Зателефонуй організаторам і визнай провал.<br>Можливо — змилуються. Але навряд.</div>
+  </div>
+
+  <button class="btn-main btn-retry" onclick="restartQuiz()">Спробувати ще раз 🔄</button>
+</div>
+
+<script>
+// ── FLOATERS ──
+const floaterEmojis = ['🍺','🥩','🔥','🎉','💀','⛓️','🎊','🍾','🏊','🌊'];
+const fc = document.getElementById('floaters');
+for(let i=0;i<20;i++){
+  const el=document.createElement('div');
+  el.className='floater';
+  el.textContent=floaterEmojis[Math.floor(Math.random()*floaterEmojis.length)];
+  el.style.left=Math.random()*100+'vw';
+  el.style.animationDuration=(6+Math.random()*10)+'s';
+  el.style.animationDelay=(Math.random()*10)+'s';
+  el.style.fontSize=(18+Math.random()*20)+'px';
+  fc.appendChild(el);
+}
+
+// ── COUNTDOWN ──
+function updateCountdown(){
+  const target=new Date('2025-05-27T15:00:00');
+  const now=new Date();
+  const diff=target-now;
+  if(diff<=0){
+    document.getElementById('countdown').innerHTML='<div style="font-family:Bebas Neue,cursive;font-size:24px;color:#ff5500;">ВЖЕ СЬОГОДНІ! 🔥</div>';
+    return;
+  }
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-d').textContent=d;
+  document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown,1000);
+
+// ── QUESTIONS ──
+// ✏️ ЗАМІНІТЬ ПИТАННЯ, ВАРІАНТИ І correct (ІНДЕКС ПРАВИЛЬНОЇ ВІДПОВІДІ 0-3)
+const questions = [
+  {
+    topic:"👰 Про наречену",
+    q:"Як звати наречену Вадима?",
+    opts:["Катерина","Марія","Олена","Вікторія"],
+    correct:1
+  },
+  {
+    topic:"🍺 Про звички",
+    q:"Що Вадим робить після другої кружки пива?",
+    opts:["Починає співати","Розповідає байки","Засинає","Дзвонить Марії"],
+    correct:1
+  },
+  {
+    topic:"👥 Про дружбу",
+    q:"Скільки років Вадим знає свого найкращого друга?",
+    opts:["Менше 2 років","3–5 років","6–10 років","Більше 10 років"],
+    correct:3
+  },
+  {
+    topic:"😅 Про відмазки",
+    q:"Яка улюблена відмазка Вадима коли не хоче кудись іти?",
+    opts:["«Я зайнятий»","«Болить голова»","«Немає грошей»","«Запитаю у Марії»"],
+    correct:3
+  },
+  {
+    topic:"🔥 Фінальне питання",
+    q:"Що найперше зробить Вадим приїхавши на мальчішнік?",
+    opts:["Відкриє пиво","Зателефонує нареченій","Піде до ріки","Перевірить чи є WiFi"],
+    correct:1
+  }
+];
+
+let current=0,correct_count=0,answered=false,results=[];
+
+function startQuiz(){
+  current=0;correct_count=0;answered=false;results=[];
+  showScreen('s1');
+  renderQuestion();
+}
+function restartQuiz(){startQuiz();}
+
+function renderQuestion(){
+  answered=false;
+  const q=questions[current];
+  document.getElementById('qtopic').textContent=q.topic;
+  document.getElementById('qtxt').textContent=q.q;
+  document.getElementById('plabel').textContent='Питання '+(current+1)+' з '+questions.length;
+  document.getElementById('pfill').style.width=(current/questions.length*100)+'%';
+  const optEl=document.getElementById('opts');
+  optEl.innerHTML='';
+  const letters=['А','Б','В','Г'];
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML='<span class="opt-letter">'+letters[i]+'</span>'+o;
+    b.onclick=()=>answer(i);
+    optEl.appendChild(b);
+  });
+  document.getElementById('statusmsg').textContent='';
+}
+
+function answer(idx){
+  if(answered)return;
+  answered=true;
+  const q=questions[current];
+  const opts=document.getElementById('opts').children;
+  const msg=document.getElementById('statusmsg');
+  const isCorrect=idx===q.correct;
+  results.push(isCorrect);
+  if(isCorrect){
+    opts[idx].classList.add('correct');
+    correct_count++;
+    msg.textContent='✓ Вірно! 🎯';
+    msg.style.color='#5DCAA5';
+  }else{
+    opts[idx].classList.add('wrong');
+    opts[q.correct].classList.add('correct');
+    msg.textContent='✗ Мимо. Правильна відповідь виділена зеленим.';
+    msg.style.color='#e74c3c';
+  }
+  setTimeout(()=>{
+    current++;
+    if(current<questions.length) renderQuestion();
+    else showResult();
+  },1400);
+}
+
+function showResult(){
+  document.getElementById('pfill').style.width='100%';
+  const pct=correct_count/questions.length;
+  const scoreEl=document.getElementById('scoreshow');
+  scoreEl.textContent=correct_count+'/'+questions.length+' ПРАВИЛЬНО';
+
+  let comment='';
+  if(pct>=0.8) comment='Ти точно той Вадим. Зустрінемось 27-го! 🍺🔥';
+  else if(pct>=0.6) comment='Зійде. Але Марію міг би знати краще 😏';
+  else comment='Хм... Адреса на твій страх і ризик. Але хто знає — може й весело буде.';
+  document.getElementById('score-comment').textContent=comment;
+
+  // chips
+  const chips=document.getElementById('win-chips');
+  chips.innerHTML='';
+  questions.forEach((q,i)=>{
+    const c=document.createElement('div');
+    c.className='chip '+(results[i]?'green':'red');
+    c.textContent=(results[i]?'✓ ':'✗ ')+q.topic;
+    chips.appendChild(c);
+  });
+
+  if(pct>=0.6) showScreen('s2');
+  else showScreen('s3');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
