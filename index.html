@@ -69,13 +69,14 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#f0f0f0;min-height:
 .address-reveal::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(29,158,117,0.15),transparent);animation:shimmer 2s 0.8s ease-in-out infinite;}
 @keyframes shimmer{0%{left:-100%;}100%{left:150%;}}
 .addr-label{font-size:11px;color:#5DCAA5;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.5rem;}
-.addr-text{font-family:'Bebas Neue',cursive;font-size:28px;color:#9FE1CB;margin-bottom:0.3rem;line-height:1.2;}
+.addr-text{font-family:'Bebas Neue',cursive;font-size:28px;color:#9FE1CB;margin-bottom:0.3rem;line-height:1.2;text-decoration: underline;}
 .addr-date{font-size:14px;color:#5DCAA5;}
 .confetti-row{font-size:32px;margin:0.5rem 0;animation:bounce 1s ease-in-out infinite alternate;}
 @keyframes bounce{from{transform:translateY(0);}to{transform:translateY(-10px);}}
 .scene-divider{display:flex;align-items:center;gap:12px;width:100%;max-width:520px;margin:1.5rem 0;}
 .scene-divider::before,.scene-divider::after{content:'';flex:1;height:1px;background:#222;}
 .scene-divider span{font-size:20px;}
+.map {width:100%;max-width: 100%;margin-top: 24px;}
 </style>
 </head>
 <body>
@@ -152,8 +153,11 @@ body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#f0f0f0;min-height:
   <div class="score-chips" id="win-chips"></div>
   <div class="address-reveal">
     <div class="addr-label">📍 Секретні координати</div>
-    <div class="addr-text">вул. Прикладна 42<br>с. Красне</div>
-    <div class="addr-date">🗓️ 27 травня · Збір о 15:00 · Ночівля</div>
+    <a href="https://maps.app.goo.gl/3yAgWeDkRepykxqx8?g_st=atm" class="addr-text">51-a Sadova St, 22</a>
+    <div class="addr-date">🗓️ 27 травня · Збір о 14:00 · Ночівля</div>
+    <div class="map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2544.1636010474813!2d30.593201899999997!3d50.382148699999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40d4c5da0325b0eb%3A0x9bccefc0f750b7e9!2zNTEt0Y8g0KHQsNC00L7QstCw0Y8g0YPQuy4sIDIyLCDQmtC40LXQsiwgMDIwMDA!5e0!3m2!1sru!2sua!4v1781804498839!5m2!1sru!2sua" width="452" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
   </div>
   <div class="scene-divider"><span>🥩</span></div>
   <div style="display:flex;gap:24px;font-size:14px;color:#666;text-align:center;margin-bottom:1.5rem;">
